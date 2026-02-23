@@ -183,6 +183,18 @@ body {
   stroke: var(--accent) !important;
 }
 
+/* Lift edges above nodes so arrowhead markers are visible */
+.react-flow .react-flow__edges {
+  z-index: 1 !important;
+  position: relative;
+}
+
+.react-flow__arrowhead polyline,
+.react-flow__arrowhead polygon {
+  fill: var(--accent) !important;
+  stroke: var(--accent) !important;
+}
+
 /* ========== BASE NODE ========== */
 .base-node {
   position: relative;

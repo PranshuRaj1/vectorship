@@ -8,7 +8,7 @@ export const inputConfig = {
   color: '#22c55e',
   handles: {
     inputs: [],
-    outputs: [{ id: 'value', label: 'Value', handleType: 'text' }],
+    outputs: [{ id: 'value', label: 'Value', handleType: 'text', labelPosition: 'left' }],
   },
   fields: [
     { key: 'inputName', label: 'Name', type: 'text', defaultValue: '' },

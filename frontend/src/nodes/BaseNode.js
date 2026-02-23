@@ -62,7 +62,7 @@ const BaseNode = ({ id, data, config, children }) => {
       {handles?.outputs?.map((h, i, arr) => (
         <span
           key={`label-out-${h.id}`}
-          className="handle-label handle-label-left"
+          className={`handle-label handle-label-${h.labelPosition || 'right'}`}
           style={{ top: `${((i + 1) / (arr.length + 1)) * 100}%` }}
         >
           {h.label}

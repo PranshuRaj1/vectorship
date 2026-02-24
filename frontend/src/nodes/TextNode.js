@@ -11,6 +11,7 @@ import { Handle, Position } from 'reactflow';
 import { FiType } from 'react-icons/fi';
 import { useDebounce } from '../hooks/useDebounce';
 import { extractVariables } from '../utils/extractVariables';
+import { useStore } from '../store';
 
 const MIN_WIDTH = 220;
 const MIN_HEIGHT = 100;
@@ -20,6 +21,7 @@ const TextNode = ({ id, data }) => {
   const textareaRef = useRef(null);
   const measureRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: MIN_WIDTH, height: MIN_HEIGHT });
+  const updateNodeField = useStore((s) => s.updateNodeField);
 
   // Debounce text for variable parsing (performance)
   const debouncedText = useDebounce(currText, 300);
@@ -52,6 +54,7 @@ const TextNode = ({ id, data }) => {
 
   const handleTextChange = (e) => {
     setCurrText(e.target.value);
+    updateNodeField(id, 'text', e.target.value);
   };
 
   return (

@@ -2,6 +2,7 @@
 // Shared layout component for all pipeline nodes.
 
 import { Handle, Position } from 'reactflow';
+import { useStore } from '../store';
 
 const BaseNode = ({ id, data, config, children }) => {
   const { label, icon: Icon, color, handles } = config;
@@ -75,14 +76,19 @@ const BaseNode = ({ id, data, config, children }) => {
 /* ---------- Generic Field Renderer ---------- */
 const NodeField = ({ field, id, data }) => {
   const { key, label, type, options, defaultValue } = field;
+  const updateNodeField = useStore((s) => s.updateNodeField);
 
   const value = data?.[key] ?? defaultValue ?? '';
+
+  const handleChange = (e) => {
+    updateNodeField(id, key, e.target.value);
+  };
 
   if (type === 'select') {
     return (
       <label className="node-field">
         <span className="node-field-label">{label}</span>
-        <select className="node-field-select" defaultValue={value}>
+        <select className="node-field-select" value={value} onChange={handleChange}>
           {options?.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
@@ -99,7 +105,8 @@ const NodeField = ({ field, id, data }) => {
         <span className="node-field-label">{label}</span>
         <textarea
           className="node-field-textarea"
-          defaultValue={value}
+          value={value}
+          onChange={handleChange}
           rows={2}
         />
       </label>
@@ -113,7 +120,8 @@ const NodeField = ({ field, id, data }) => {
         <input
           className="node-field-input"
           type="number"
-          defaultValue={value}
+          value={value}
+          onChange={handleChange}
         />
       </label>
     );
@@ -123,7 +131,7 @@ const NodeField = ({ field, id, data }) => {
   return (
     <label className="node-field">
       <span className="node-field-label">{label}</span>
-      <input className="node-field-input" type="text" defaultValue={value} />
+      <input className="node-field-input" type="text" value={value} onChange={handleChange} />
     </label>
   );
 };

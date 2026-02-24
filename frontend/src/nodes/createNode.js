@@ -14,6 +14,13 @@ import BaseNode from './BaseNode';
  * @returns {React.FC}     - A ReactFlow-compatible node component
  */
 export const createNode = (config) => {
+  // If the config declares a custom component, use it directly
+  if (config.customRender && config.customComponent) {
+    const Custom = config.customComponent;
+    Custom.displayName = `${config.label.replace(/\s/g, '')}Node`;
+    return Custom;
+  }
+
   const NodeComponent = (props) => (
     <BaseNode config={config} {...props} />
   );

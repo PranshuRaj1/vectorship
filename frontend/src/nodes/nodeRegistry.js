@@ -4,7 +4,6 @@
 // The toolbar and ReactFlow nodeTypes are auto-generated from this file.
 
 import { createNode } from './createNode';
-import TextNode from './TextNode';
 
 // --- Config imports ---
 import { inputConfig } from './configs/inputConfig';
@@ -18,11 +17,13 @@ import { timerConfig } from './configs/timerConfig';
 import { noteConfig } from './configs/noteConfig';
 
 // --- Registry: type → { component, config } ---
+// All nodes go through createNode — custom rendering is handled by the factory
+// via the customRender + customComponent flags in each config.
 const registry = [
   { config: inputConfig,       component: createNode(inputConfig) },
   { config: outputConfig,      component: createNode(outputConfig) },
   { config: llmConfig,         component: createNode(llmConfig) },
-  { config: textConfig,        component: TextNode },          // custom render
+  { config: textConfig,        component: createNode(textConfig) },
   { config: apiConfig,         component: createNode(apiConfig) },
   { config: conditionalConfig, component: createNode(conditionalConfig) },
   { config: mergeConfig,       component: createNode(mergeConfig) },

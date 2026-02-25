@@ -44,7 +44,10 @@ export const PipelineUI = () => {
     const onDrop = useCallback(
         (event) => {
           event.preventDefault();
-    
+
+          // Guard: bail out if ReactFlow hasn't initialized yet
+          if (!reactFlowInstance || !reactFlowWrapper.current) return;
+
           const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
           if (event?.dataTransfer?.getData('application/reactflow')) {
             const appData = JSON.parse(event.dataTransfer.getData('application/reactflow'));

@@ -2,27 +2,28 @@
 // Styled toast notification component.
 // Listens for pipeline-result and pipeline-error custom events.
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { FiCheckCircle, FiAlertCircle, FiX } from 'react-icons/fi';
 
 const Toast = () => {
   const [toasts, setToasts] = useState([]);
+  const idCounter = useRef(0);
 
-  const addToast = useCallback((toast) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { ...toast, id }]);
-    // Auto-dismiss after 6 seconds
-    setTimeout(() => removeToast(id), 6000);
-  }, []);
-
-  const removeToast = (id) => {
+  const removeToast = useCallback((id) => {
     setToasts((prev) =>
       prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
     );
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 250); // match exit animation
-  };
+  }, []);
+
+  const addToast = useCallback((toast) => {
+    const id = ++idCounter.current;
+    setToasts((prev) => [...prev, { ...toast, id }]);
+    // Auto-dismiss after 6 seconds
+    setTimeout(() => removeToast(id), 6000);
+  }, [removeToast]);
 
   useEffect(() => {
     const handleResult = (e) => {

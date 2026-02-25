@@ -33,6 +33,20 @@ const TextNode = ({ id, data }) => {
     [debouncedText]
   );
 
+  // Clean up orphaned edges when variables are removed
+  useEffect(() => {
+    const { edges, onEdgesChange } = useStore.getState();
+    const validHandleIds = new Set(variables.map((v) => `${id}-${v}`));
+
+    const edgesToRemove = edges
+      .filter((e) => e.target === id && e.targetHandle && !validHandleIds.has(e.targetHandle) && e.targetHandle !== `${id}-output`)
+      .map((e) => ({ id: e.id, type: 'remove' }));
+
+    if (edgesToRemove.length > 0) {
+      onEdgesChange(edgesToRemove);
+    }
+  }, [variables, id]);
+
   // Auto-resize logic
   useEffect(() => {
     if (!textareaRef.current) return;

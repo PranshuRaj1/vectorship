@@ -11,6 +11,7 @@ import { Handle, Position } from 'reactflow';
 import { FiType } from 'react-icons/fi';
 import { useDebounce } from '../hooks/useDebounce';
 import { extractVariables } from '../utils/extractVariables';
+import { getHandlePosition } from '../utils/handlePosition';
 import { useStore } from '../store';
 
 const MIN_WIDTH = 220;
@@ -76,7 +77,7 @@ const TextNode = ({ id, data }) => {
           id={`${id}-${v}`}
           className="handle handle-input"
           style={{
-            top: `${((i + 1) / (variables.length + 1)) * 100}%`,
+            top: getHandlePosition(i, variables.length),
           }}
         />
       ))}
@@ -87,7 +88,7 @@ const TextNode = ({ id, data }) => {
           key={`label-${v}`}
           className="handle-label handle-label-left"
           style={{
-            top: `${((i + 1) / (variables.length + 1)) * 100}%`,
+            top: getHandlePosition(i, variables.length),
           }}
         >
           {v}

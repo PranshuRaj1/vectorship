@@ -3,6 +3,7 @@
 
 import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
+import { getHandlePosition } from '../utils/handlePosition';
 
 const BaseNode = ({ id, data, config, children }) => {
   const { label, icon: Icon, color, handles } = config;
@@ -17,7 +18,7 @@ const BaseNode = ({ id, data, config, children }) => {
           position={Position.Left}
           id={`${id}-${h.id}`}
           className="handle handle-input"
-          style={{ top: `${((i + 1) / (arr.length + 1)) * 100}%` }}
+          style={{ top: getHandlePosition(i, arr.length) }}
           data-handletype={h.handleType || 'any'}
         />
       ))}
@@ -45,7 +46,7 @@ const BaseNode = ({ id, data, config, children }) => {
           position={Position.Right}
           id={`${id}-${h.id}`}
           className="handle handle-output"
-          style={{ top: `${((i + 1) / (arr.length + 1)) * 100}%` }}
+          style={{ top: getHandlePosition(i, arr.length) }}
           data-handletype={h.handleType || 'any'}
         />
       ))}
@@ -55,7 +56,7 @@ const BaseNode = ({ id, data, config, children }) => {
         <span
           key={`label-in-${h.id}`}
           className="handle-label handle-label-left  "
-          style={{ top: `${((i + 1) / (arr.length + 1)) * 100}%` }}
+          style={{ top: getHandlePosition(i, arr.length) }}
         >
           {h.label}
         </span>
@@ -64,7 +65,7 @@ const BaseNode = ({ id, data, config, children }) => {
         <span
           key={`label-out-${h.id}`}
           className={`handle-label handle-label-${h.labelPosition || 'right'}`}
-          style={{ top: `${((i + 1) / (arr.length + 1)) * 100}%` }}
+          style={{ top: getHandlePosition(i, arr.length) }}
         >
           {h.label}
         </span>

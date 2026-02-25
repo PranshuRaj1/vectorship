@@ -346,6 +346,9 @@ body {
   transform: translateY(-50%);
   pointer-events: none;
   white-space: nowrap;
+  max-width: calc(100% - 40px);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .handle-label-left {

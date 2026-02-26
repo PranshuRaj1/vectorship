@@ -1,6 +1,7 @@
 // BaseNode.js
 // Shared layout component for all pipeline nodes.
 
+import { useState, useRef, useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
 import { getHandlePosition } from '../utils/handlePosition';
@@ -12,8 +13,19 @@ const BaseNode = ({ id, data, config, children, overrideInputs, nodeStyle }) => 
   // otherwise fall back to static config handles.
   const inputs = overrideInputs || handles?.inputs || [];
 
+  // Auto-resize dimensions reported by textarea fields
+  const [resizeDims, setResizeDims] = useState(null);
+
   return (
-    <div className="base-node" style={{ ...nodeStyle, '--node-color': color }}>
+    <div className="base-node" style={{
+      ...nodeStyle,
+      ...(resizeDims && {
+        width: resizeDims.width,
+        minHeight: resizeDims.height,
+        transition: 'width 0.2s ease, min-height 0.2s ease',
+      }),
+      '--node-color': color,
+    }}>
       {/* --- Left Handles (inputs) --- */}
       {inputs.map((h, i, arr) => (
         <Handle
@@ -38,7 +50,7 @@ const BaseNode = ({ id, data, config, children, overrideInputs, nodeStyle }) => 
         {children
           ? children
           : config.fields?.map((field) => (
-              <NodeField key={field.key} field={field} id={id} data={data} />
+              <NodeField key={field.key} field={field} id={id} data={data} onResize={setResizeDims} />
             ))}
       </div>
 
@@ -78,8 +90,62 @@ const BaseNode = ({ id, data, config, children, overrideInputs, nodeStyle }) => 
   );
 };
 
+/* ---------- Auto-Resize Textarea ---------- */
+const MIN_WIDTH = 220;
+const MIN_HEIGHT = 100;
+
+const AutoResizeTextarea = ({ label, value, onChange, onResize }) => {
+  const textareaRef = useRef(null);
+  const measureRef = useRef(null);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    const el = textareaRef.current;
+
+    // Reset to auto to get accurate scrollHeight
+    el.style.height = 'auto';
+    const scrollH = el.scrollHeight;
+    el.style.height = `${scrollH}px`;
+
+    // Measure text width using hidden span
+    if (measureRef.current && onResize) {
+      measureRef.current.textContent = value || ' ';
+      const textW = measureRef.current.scrollWidth + 40; // padding
+      const newWidth = Math.max(MIN_WIDTH, Math.min(textW, 400));
+      const newHeight = Math.max(MIN_HEIGHT, scrollH + 70); // header + padding
+      onResize({ width: newWidth, height: newHeight });
+    }
+  }, [value, onResize]);
+
+  return (
+    <label className="node-field">
+      <span className="node-field-label">{label}</span>
+      <textarea
+        ref={textareaRef}
+        className="node-field-textarea"
+        value={value}
+        onChange={onChange}
+        rows={2}
+        style={{ overflow: 'hidden', transition: 'height 0.2s ease' }}
+      />
+      {/* Hidden measurement element for auto-resize width calculation */}
+      <span
+        ref={measureRef}
+        style={{
+          position: 'absolute',
+          visibility: 'hidden',
+          whiteSpace: 'pre',
+          font: 'inherit',
+          fontSize: '12px',
+          padding: '0 8px',
+        }}
+      />
+    </label>
+  );
+};
+
 /* ---------- Generic Field Renderer ---------- */
-const NodeField = ({ field, id, data }) => {
+const NodeField = ({ field, id, data, onResize }) => {
   const { key, label, type, options, defaultValue } = field;
   const updateNodeField = useStore((s) => s.updateNodeField);
 
@@ -106,15 +172,12 @@ const NodeField = ({ field, id, data }) => {
 
   if (type === 'textarea') {
     return (
-      <label className="node-field">
-        <span className="node-field-label">{label}</span>
-        <textarea
-          className="node-field-textarea"
-          value={value}
-          onChange={handleChange}
-          rows={2}
-        />
-      </label>
+      <AutoResizeTextarea
+        label={label}
+        value={value}
+        onChange={handleChange}
+        onResize={onResize}
+      />
     );
   }
 

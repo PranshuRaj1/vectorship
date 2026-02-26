@@ -5,13 +5,17 @@ import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
 import { getHandlePosition } from '../utils/handlePosition';
 
-const BaseNode = ({ id, data, config, children }) => {
+const BaseNode = ({ id, data, config, children, overrideInputs, nodeStyle }) => {
   const { label, icon: Icon, color, handles } = config;
 
+  // Use overrideInputs when provided (e.g. TextNode's dynamic variable handles),
+  // otherwise fall back to static config handles.
+  const inputs = overrideInputs || handles?.inputs || [];
+
   return (
-    <div className="base-node" style={{ '--node-color': color }}>
+    <div className="base-node" style={{ ...nodeStyle, '--node-color': color }}>
       {/* --- Left Handles (inputs) --- */}
-      {handles?.inputs?.map((h, i, arr) => (
+      {inputs.map((h, i, arr) => (
         <Handle
           key={h.id}
           type="target"
@@ -52,10 +56,10 @@ const BaseNode = ({ id, data, config, children }) => {
       ))}
 
       {/* --- Handle labels --- */}
-      {handles?.inputs?.map((h, i, arr) => (
+      {inputs.map((h, i, arr) => (
         <span
           key={`label-in-${h.id}`}
-          className="handle-label handle-label-left  "
+          className="handle-label handle-label-left"
           style={{ top: getHandlePosition(i, arr.length) }}
         >
           {h.label}

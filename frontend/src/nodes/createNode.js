@@ -17,8 +17,11 @@ export const createNode = (config) => {
   // If the config declares a custom component, use it directly
   if (config.customRender && config.customComponent) {
     const Custom = config.customComponent;
-    Custom.displayName = `${config.label.replace(/\s/g, '')}Node`;
-    return Custom;
+    // Wrap so the custom component receives config as a prop.
+    // Safe: createNode is called once at module-load time, not per render.
+    const WrappedCustom = (props) => <Custom config={config} {...props} />;
+    WrappedCustom.displayName = `${config.label.replace(/\s/g, '')}Node`;
+    return WrappedCustom;
   }
 
   const NodeComponent = (props) => (

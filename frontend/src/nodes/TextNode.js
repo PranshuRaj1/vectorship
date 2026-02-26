@@ -1,23 +1,21 @@
 // TextNode.js
-// Enhanced Text node with:
+// Enhanced Text node that composes BaseNode for consistent styling.
+// Custom behavior:
 //   - Auto-resize textarea (width + height grow with content)
 //   - Debounced variable parsing from {{ variableName }} patterns
-//   - Dynamic left-side handles per unique variable
+//   - Dynamic left-side handles per unique variable (via overrideInputs)
 //   - Handle cleanup when variables are deleted
-//   - Smooth resize transitions
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Handle, Position } from 'reactflow';
-import { FiType } from 'react-icons/fi';
+import BaseNode from './BaseNode';
 import { useDebounce } from '../hooks/useDebounce';
 import { extractVariables } from '../utils/extractVariables';
-import { getHandlePosition } from '../utils/handlePosition';
 import { useStore } from '../store';
 
 const MIN_WIDTH = 220;
 const MIN_HEIGHT = 100;
 
-const TextNode = ({ id, data }) => {
+const TextNode = ({ id, data, config }) => {
   const [currText, setCurrText] = useState(data?.text || '{{input}}');
   const textareaRef = useRef(null);
   const measureRef = useRef(null);
@@ -51,7 +49,7 @@ const TextNode = ({ id, data }) => {
   useEffect(() => {
     if (!textareaRef.current) return;
     const el = textareaRef.current;
-    
+
     // Reset to auto to get accurate scrollHeight
     el.style.height = 'auto';
     const scrollH = el.scrollHeight;
@@ -72,67 +70,36 @@ const TextNode = ({ id, data }) => {
     updateNodeField(id, 'text', e.target.value);
   };
 
+  // Map variables to the handle format BaseNode expects
+  const dynamicHandles = variables.map((v) => ({ id: v, label: v }));
+
   return (
-    <div
-      className="base-node"
-      style={{
-        '--node-color': '#3b82f6',
+    <BaseNode
+      id={id}
+      data={data}
+      config={config}
+      overrideInputs={dynamicHandles}
+      nodeStyle={{
         width: dimensions.width,
         minHeight: dimensions.height,
         transition: 'width 0.2s ease, min-height 0.2s ease',
       }}
     >
-      {/* Dynamic input handles from {{ variables }} */}
-      {variables.map((v, i) => (
-        <Handle
-          key={v}
-          type="target"
-          position={Position.Left}
-          id={`${id}-${v}`}
-          className="handle handle-input"
+      <label className="node-field">
+        <span className="node-field-label">Text</span>
+        <textarea
+          ref={textareaRef}
+          className="node-field-textarea"
+          value={currText}
+          onChange={handleTextChange}
           style={{
-            top: getHandlePosition(i, variables.length),
+            overflow: 'hidden',
+            transition: 'height 0.2s ease',
           }}
         />
-      ))}
+      </label>
 
-      {/* Handle labels (left) */}
-      {variables.map((v, i) => (
-        <span
-          key={`label-${v}`}
-          className="handle-label handle-label-left"
-          style={{
-            top: getHandlePosition(i, variables.length),
-          }}
-        >
-          {v}
-        </span>
-      ))}
-
-      {/* Header */}
-      <div className="base-node-header">
-        <FiType className="base-node-icon" />
-        <span className="base-node-title">Text</span>
-      </div>
-
-      {/* Body */}
-      <div className="base-node-body">
-        <label className="node-field">
-          <span className="node-field-label">Text</span>
-          <textarea
-            ref={textareaRef}
-            className="node-field-textarea"
-            value={currText}
-            onChange={handleTextChange}
-            style={{
-              overflow: 'hidden',
-              transition: 'height 0.2s ease',
-            }}
-          />
-        </label>
-      </div>
-
-      {/* Hidden measurement element */}
+      {/* Hidden measurement element for auto-resize width calculation */}
       <span
         ref={measureRef}
         style={{
@@ -144,22 +111,7 @@ const TextNode = ({ id, data }) => {
           padding: '0 8px',
         }}
       />
-
-      {/* Output handle */}
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-output`}
-        className="handle handle-output"
-        style={{ top: '50%' }}
-      />
-      <span
-        className="handle-label handle-label-right"
-        style={{ top: '50%' }}
-      >
-        Output
-      </span>
-    </div>
+    </BaseNode>
   );
 };
 

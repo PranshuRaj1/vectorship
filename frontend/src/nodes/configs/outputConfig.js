@@ -4,6 +4,7 @@ import { FiUpload } from 'react-icons/fi';
 export const outputConfig = {
   type: 'customOutput',
   label: 'Output',
+  description: 'Output data of different types from your workflow.',
   icon: FiUpload,
   color: '#f97316',
   handles: {

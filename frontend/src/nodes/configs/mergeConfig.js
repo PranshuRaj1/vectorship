@@ -4,6 +4,7 @@ import { FiLayers } from 'react-icons/fi';
 export const mergeConfig = {
   type: 'merge',
   label: 'Merge',
+  description: 'Combine multiple inputs into a single output.',
   icon: FiLayers,
   color: '#14b8a6',
   handles: {

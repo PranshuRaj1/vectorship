@@ -5,6 +5,7 @@ import TextNode from '../TextNode';
 export const textConfig = {
   type: 'text',
   label: 'Text',
+  description: 'Write text and use {{variables}} for dynamic inputs.',
   icon: FiType,
   color: '#3b82f6',
   handles: {

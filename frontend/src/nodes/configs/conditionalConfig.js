@@ -4,6 +4,7 @@ import { FiGitBranch } from 'react-icons/fi';
 export const conditionalConfig = {
   type: 'conditional',
   label: 'Conditional',
+  description: 'Route data based on a condition.',
   icon: FiGitBranch,
   color: '#eab308',
   handles: {

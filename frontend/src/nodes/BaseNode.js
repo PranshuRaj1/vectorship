@@ -41,9 +41,17 @@ const BaseNode = ({ id, data, config, children, overrideInputs, nodeStyle }) => 
 
       {/* --- Header --- */}
       <div className="base-node-header">
-        {Icon && <Icon className="base-node-icon" />}
-        <span className="base-node-title">{label}</span>
+        <div className="base-node-header-row">
+          {Icon && <Icon className="base-node-icon" />}
+          <span className="base-node-title">{label}</span>
+        </div>
+        {config.description && (
+          <p className="base-node-description">{config.description}</p>
+        )}
       </div>
+
+      {/* --- Node ID --- */}
+      <span className="base-node-id">{id}</span>
 
       {/* --- Body --- */}
       <div className="base-node-body">

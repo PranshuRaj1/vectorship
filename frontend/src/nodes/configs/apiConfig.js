@@ -4,6 +4,7 @@ import { FiGlobe } from 'react-icons/fi';
 export const apiConfig = {
   type: 'api',
   label: 'API Request',
+  description: 'Make an HTTP request to an external API.',
   icon: FiGlobe,
   color: '#6366f1',
   handles: {

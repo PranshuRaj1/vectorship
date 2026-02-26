@@ -4,6 +4,7 @@ import { FiCpu } from 'react-icons/fi';
 export const llmConfig = {
   type: 'llm',
   label: 'LLM',
+  description: 'Send a prompt to an LLM and get a response.',
   icon: FiCpu,
   color: '#a855f7',
   handles: {

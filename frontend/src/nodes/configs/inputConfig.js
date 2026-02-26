@@ -4,6 +4,7 @@ import { FiDownload } from 'react-icons/fi';
 export const inputConfig = {
   type: 'customInput',
   label: 'Input',
+  description: 'Pass data of different types into your workflow.',
   icon: FiDownload,
   color: '#22c55e',
   handles: {

@@ -4,6 +4,7 @@ import { FiClock } from 'react-icons/fi';
 export const timerConfig = {
   type: 'timer',
   label: 'Timer',
+  description: 'Delay execution for a specified duration.',
   icon: FiClock,
   color: '#ec4899',
   handles: {

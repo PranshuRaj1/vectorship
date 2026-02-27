@@ -95,10 +95,12 @@ def check_dag(nodes: list[NodeData], edges: list[EdgeData]) -> tuple[bool, list[
     path = []
 
     def dfs(node):
-        if node in visited:
+        if node in path:
             # Found cycle — extract it
             cycle_start = path.index(node)
             return path[cycle_start:] + [node]
+        if node in visited:
+            return None
         visited.add(node)
         path.append(node)
         for neighbor in adj[node]:

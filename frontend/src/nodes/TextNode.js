@@ -6,7 +6,7 @@
 //   - Dynamic left-side handles per unique variable (via overrideInputs)
 //   - Handle cleanup when variables are deleted
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import BaseNode from './BaseNode';
 import { useDebounce } from '../hooks/useDebounce';
 import { extractVariables } from '../utils/extractVariables';
@@ -16,14 +16,16 @@ const MIN_WIDTH = 220;
 const MIN_HEIGHT = 100;
 
 const TextNode = ({ id, data, config }) => {
-  const [currText, setCurrText] = useState(data?.text || '{{input}}');
+  // Read directly from store — single source of truth (no local copy)
+  const text = data?.text ?? '{{input}}';
   const textareaRef = useRef(null);
   const measureRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: MIN_WIDTH, height: MIN_HEIGHT });
+  console.log('Local:', text, '| Store:', data?.text);
   const updateNodeField = useStore((s) => s.updateNodeField);
 
-  // Debounce text for variable parsing (performance)
-  const debouncedText = useDebounce(currText, 300);
+  // Debounce only for variable extraction (not for display)
+  const debouncedText = useDebounce(text, 300);
 
   // Extract unique variables from debounced text
   const variables = useMemo(
@@ -57,16 +59,18 @@ const TextNode = ({ id, data, config }) => {
 
     // Measure text width using hidden span
     if (measureRef.current) {
-      measureRef.current.textContent = currText || ' ';
+      measureRef.current.textContent = text || ' ';
       const textW = measureRef.current.scrollWidth + 40; // padding
       const newWidth = Math.max(MIN_WIDTH, Math.min(textW, 400));
       const newHeight = Math.max(MIN_HEIGHT, scrollH + 70); // header + padding
-      setDimensions({ width: newWidth, height: newHeight });
+      setDimensions(prev => {
+        if (prev.width === newWidth && prev.height === newHeight) return prev;
+        return { width: newWidth, height: newHeight };
+      });
     }
-  }, [currText]);
+  }, [text]);
 
   const handleTextChange = (e) => {
-    setCurrText(e.target.value);
     updateNodeField(id, 'text', e.target.value);
   };
 
@@ -90,7 +94,7 @@ const TextNode = ({ id, data, config }) => {
         <textarea
           ref={textareaRef}
           className="node-field-textarea"
-          value={currText}
+          value={text}
           onChange={handleTextChange}
           style={{
             overflow: 'hidden',
